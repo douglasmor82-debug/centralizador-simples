@@ -1,6 +1,7 @@
 import base64
 import html
 import json
+import os
 import re
 from pathlib import Path
 
@@ -8,7 +9,7 @@ import requests
 import streamlit as st
 import streamlit.components.v1 as components
 
-st.set_page_config(page_title="Projetos", page_icon="🗂️", layout="wide")
+st.set_page_config(page_title="Meus Projetos", page_icon="🗂️", layout="wide")
 
 API = "https://api.github.com"
 DATA_FILE = Path(__file__).parent / "projects.json"
@@ -40,6 +41,13 @@ def secret(name, default=None):
         return st.secrets[name]
     except Exception:
         return default
+
+
+ADMIN = str(secret("ADMIN_MODE", os.getenv("ADMIN_MODE", "false"))).strip().lower() in (
+    "1",
+    "true",
+    "yes",
+)
 
 
 def gh_headers(raw=False):
@@ -297,44 +305,47 @@ with st.sidebar:
     ncols = st.slider("Colunas", 2, 4, 3) if view == "Quadros" else 3
     query = st.text_input("🔍 Buscar", placeholder="nome, tópico ou descrição")
 
-    st.divider()
-    st.subheader("➕ Adicionar projeto")
-    new_url = st.text_input("URL do GitHub", placeholder="https://github.com/usuario/repo")
-    if st.button("Adicionar", use_container_width=True):
-        parsed = parse_repo(new_url)
-        if not parsed:
-            st.error("URL inválida. Use o formato github.com/usuario/repo")
-        elif new_url.strip() in st.session_state.urls:
-            st.warning("Esse projeto já está na lista.")
-        else:
-            try:
-                fetch_project(*parsed)
-                st.session_state.urls.append(new_url.strip())
-                saved = persist(st.session_state.urls)
-                st.success("Adicionado!" + (" Salvo no GitHub." if saved else ""))
-                st.rerun()
-            except requests.HTTPError as e:
-                st.error(f"Não consegui acessar o repositório ({e.response.status_code}).")
+    if ADMIN:
+        st.divider()
+        st.subheader("➕ Adicionar projeto")
+        new_url = st.text_input("URL do GitHub", placeholder="https://github.com/usuario/repo")
+        if st.button("Adicionar", use_container_width=True):
+            parsed = parse_repo(new_url)
+            if not parsed:
+                st.error("URL inválida. Use o formato github.com/usuario/repo")
+            elif new_url.strip() in st.session_state.urls:
+                st.warning("Esse projeto já está na lista.")
+            else:
+                try:
+                    fetch_project(*parsed)
+                    st.session_state.urls.append(new_url.strip())
+                    saved = persist(st.session_state.urls)
+                    st.success("Adicionado!" + (" Salvo no GitHub." if saved else ""))
+                    st.rerun()
+                except requests.HTTPError as e:
+                    st.error(f"Não consegui acessar o repositório ({e.response.status_code}).")
 
-    with st.expander("🛠️ Gerenciar"):
-        if st.session_state.urls:
-            to_remove = st.selectbox("Remover", st.session_state.urls)
-            if st.button("Remover projeto"):
-                st.session_state.urls.remove(to_remove)
-                persist(st.session_state.urls)
+        with st.expander("🛠️ Gerenciar"):
+            if st.session_state.urls:
+                to_remove = st.selectbox("Remover", st.session_state.urls)
+                if st.button("Remover projeto"):
+                    st.session_state.urls.remove(to_remove)
+                    persist(st.session_state.urls)
+                    st.rerun()
+            st.download_button(
+                "⬇️ Baixar projects.json",
+                dump_json(st.session_state.urls),
+                file_name="projects.json",
+                mime="application/json",
+            )
+            if st.button("🔄 Atualizar dados do GitHub"):
+                st.cache_data.clear()
                 st.rerun()
-        st.download_button(
-            "⬇️ Baixar projects.json",
-            dump_json(st.session_state.urls),
-            file_name="projects.json",
-            mime="application/json",
-        )
-        if st.button("🔄 Atualizar dados do GitHub"):
-            st.cache_data.clear()
-            st.rerun()
 
-    if not secret("GITHUB_TOKEN"):
-        st.caption("Sem GITHUB_TOKEN: limite de 60 consultas/hora na API do GitHub.")
+    if ADMIN:
+        st.caption("🔧 Modo administrador ativo")
+        if not secret("GITHUB_TOKEN"):
+            st.caption("Sem GITHUB_TOKEN: limite de 60 consultas/hora na API do GitHub.")
 
 
 # ---------- corpo ----------
