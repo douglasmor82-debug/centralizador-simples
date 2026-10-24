@@ -18,7 +18,7 @@ projetos = [
         "integrantes": ["Bruno dos Santos Silva","Cauã Monteiro da Silva","Gabriel Oliveira Lima","John Alan Oliveira Lima","Julia Paulina Gomes","Keila Santana do Amaral"],
        
         "link_externo": "https://icms-educacional-sp-g5v78cvydzqcbxcpd9fxzs.streamlit.app/",
-        "imagem": "https://www.google.com/imgres?q=brasao%20estado%20sao%20paulo&imgurl=https%3A%2F%2Fthumb.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F1%2F1a%2FBras%25C3%25A3o_do_estado_de_S%25C3%25A3o_Paulo.svg%2F1280px-Bras%25C3%25A3o_do_estado_de_S%25C3%25A3o_Paulo.svg.png%3Futm_source%3Dpt.wikipedia.org%26utm_campaign%3Dindex%26utm_content%3Dthumbnail&imgrefurl=https%3A%2F%2Fpt.wikipedia.org%2Fwiki%2FBras%25C3%25A3o_do_estado_de_S%25C3%25A3o_Paulo&docid=UHoAg5n-MtX60M&tbnid=r8MRN3pXnRlYuM&vet=12ahUKEwiOnPHEydKXAxW7qZUCHSkMK-QQnPAOegQIRhAA..i&w=1280&h=1488&hcb=2&ved=2ahUKEwiOnPHEydKXAxW7qZUCHSkMK-QQnPAOegQIRhAA"},
+        "imagem": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQG5SNLQHfR8AAtHjYb61gV_hXceNChHYAqWS40K_GlgQ&s=10"},
     {
         "nome": "AgentReact",
         "integrantes": ["Emerson Silva"],
